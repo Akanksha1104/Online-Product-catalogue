@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}"></title>
+    
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        
+        body {
+            margin: 0;
+            overflow-x: hidden; 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f0f2f5; 
+            position: relative; 
+            min-height: 100vh; 
+        }
+
+       
+        #interactive-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw; 
+            height: 100vh; 
+            z-index: -1; 
+            background-color: #1a202c; 
+        }
+
+        
+        .container {
+            position: relative; 
+            z-index: 1; 
+            max-width: 800px; 
+            margin: 40px auto;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.95); 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); 
+            backdrop-filter: blur(5px); 
+            -webkit-backdrop-filter: blur(5px); 
+        }
+
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        
+        .product-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus,
+        .form-group textarea:focus {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+
+        .form-group textarea {
+            resize: vertical; 
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none; 
+            display: inline-block; 
+            text-align: center;
+        }
+
+        .btn-primary { 
+            background-color: #4299e1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3182ce;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #a0aec0;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #718096;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #38a169;
+            transform: translateY(-2px);
+        }
+
+      
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            .form-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+   
+    <canvas id="interactive-background"></canvas>
+
+    <div class="container">
+        <h1 th:text="${pageTitle}"></h1>
+
+        <form th:action="@{/products/save}" th:object="${product}" method="post" class="product-form">
+            <input type="hidden" th:field="*{id}" /> 
+
+            <div class="form-group">
+                <label for="name">Product Name:</label>
+                <input type="text" id="name" th:field="*{name}" required />
+            </div>
+
+            <div class="form-group">
+	            <label for="quantity">Quantity:</label>
+	            <select id="quantity" name="quantity" required style="height: 45px; font-size: 1rem; border-radius: 10px;">
+	            <option value="">-- Select Quantity --</option>
+	            </select>
+	        </div>
+	
+	        <script>
+	            const quantitySelect = document.getElementById('quantity');
+	            for (let i = 1; i <= 100; i++) {
+	            const option = document.createElement('option');
+	            option.value = i;
+	            option.textContent = i;
+	            quantitySelect.appendChild(option);
+	            }
+	        </script>
+
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" th:field="*{category}" required style="height: 45px; font-size: 1rem;border-radius: 10px;">
+                <option value="">-- Select Category --</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Books & Media">Books & Media</option>
+                <option value="Home & Kitchen">Home & Kitchen</option>
+                <option value="Toys & Hobbies">Toys & Hobbies</option>
+                <option value="Food & Beverage">Food & Beverage</option>
+                <option value="Sports & Outdoor">Sports & Outdoor</option>
+                <option value="Fashion & Apparel">Fashion & Apparel</option>
+                <option value="Health & Wellness">Health & Wellness</option>
+                <option value="Furniture & Decor">Furniture & Decor</option>
+                <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                <option value="Others">Others</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" th:field="*{price}" required min="0" step="0.01" />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" th:field="*{description}" rows="5"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Save Product</button>
+                <a th:href="@{/}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        
+        const canvas = document.getElementById('interactive-background');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const numParticles = 100; 
+        const maxDistance = 100; 
+        const mouseRadius = 150; 
+
+        let mouse = {
+            x: null,
+            y: null,
+            radius: mouseRadius
+        };
+
+   
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+       
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+
+           
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            
+            update() {
+                
+                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+                    this.directionY = -this.directionY;
+                }
+
+               
+                if (mouse.x !== null && mouse.y !== null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouse.radius + this.size) {
+                        if (mouse.x < this.x && this.x < canvas.width - this.size * 10) {
+                            this.x += 10;
+                        }
+                        if (mouse.x > this.x && this.x > this.size * 10) {
+                            this.x -= 10;
+                        }
+                        if (mouse.y < this.y && this.y < canvas.height - this.size * 10) {
+                            this.y += 10;
+                        }
+                        if (mouse.y > this.y && this.y > this.size * 10) {
+                            this.y -= 10;
+                        }
+                    }
+                }
+
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        
+        function init() {
+            particles = [];
+            for (let i = 0; i < numParticles; i++) {
+                let size = (Math.random() * 3) + 1; 
+                let x = (Math.random() * ((canvas.width - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((canvas.height - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * 0.5) - 0.25; 
+                let directionY = (Math.random() * 0.5) - 0.25;
+                let color = 'rgba(255, 255, 255, 0.8)'; 
+                particles.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x)) +
+                                   ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
+                    if (distance < (maxDistance * maxDistance)) {
+                        opacityValue = 1 - (distance / (maxDistance * maxDistance));
+                        ctx.strokeStyle = 'rgba(255, 255, 255,' + opacityValue + ')';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+            }
+            connect(); 
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+      
+        window.onload = function() {
+            resizeCanvas(); 
+            animate(); 
+        };
+    </script>
+</body>
+</html>
